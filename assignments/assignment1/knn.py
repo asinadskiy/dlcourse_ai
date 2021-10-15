@@ -55,7 +55,8 @@ class KNN:
         for i_test in range(num_test):
             for i_train in range(num_train):
                 # TODO: Fill dists[i_test][i_train]
-                pass
+                dists[i_test][i_train] = sum(np.abs(X[i_test] - self.train_X[i_train]))
+        return dists
 
     def compute_distances_one_loop(self, X):
         '''
@@ -75,7 +76,8 @@ class KNN:
         for i_test in range(num_test):
             # TODO: Fill the whole row of dists[i_test]
             # without additional loops or list comprehensions
-            pass
+            dists[i_test] = np.sum(np.abs(X[i_test] - self.train_X[:]), axis=1)
+        return dists
 
     def compute_distances_no_loops(self, X):
         '''
@@ -94,7 +96,8 @@ class KNN:
         # Using float32 to to save memory - the default is float64
         dists = np.zeros((num_test, num_train), np.float32)
         # TODO: Implement computing all distances with no loops!
-        pass
+        dists = np.sum(np.abs(np.float32(X[:, np.newaxis] - self.train_X)), axis=2)
+        return dists
 
     def predict_labels_binary(self, dists):
         '''
@@ -113,7 +116,13 @@ class KNN:
         for i in range(num_test):
             # TODO: Implement choosing best class based on k
             # nearest training samples
-            pass
+            y_nearest = [] # список узлов, которые ближе всего
+            dist = dists[i] # расстояния до ближайших train узлов
+            tmp = list(dist)
+            tmp_sorted = sorted(tmp)
+            for k in range(self.k): # для каждого из ближайших
+                y_nearest.append(tmp.index(tmp_sorted[k])) # дописываем № наименьшего
+            pred[i] = np.argmax(np.bincount(y_nearest)) # самый частый номер из наименьших
         return pred
 
     def predict_labels_multiclass(self, dists):
@@ -134,5 +143,8 @@ class KNN:
         for i in range(num_test):
             # TODO: Implement choosing best class based on k
             # nearest training samples
-            pass
+            nearest_y = []
+            y_indicies = np.argsort(dists[i, :], axis = 0)[:self.k]
+            nearest_y = self.train_y[y_indicies]
+            pred[i] = np.argmax(np.bincount(nearest_y))
         return pred
