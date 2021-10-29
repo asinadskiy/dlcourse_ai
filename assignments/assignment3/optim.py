@@ -11,7 +11,9 @@ class MomentumSGD:
     Implements Momentum SGD update
     '''
     def __init__(self, momentum=0.9):
-        self.momentum = 0.9
+        # из предыдущего задания
+        self.momentum = momentum # коэффициент затухания
+        self.velocity = 0 # скорость изменения
     
     def update(self, w, d_w, learning_rate):
         '''
@@ -25,5 +27,7 @@ class MomentumSGD:
         Returns:
         updated_weights, np array same shape as w
         '''
-        # TODO Copy from the previous assignment
-        raise Exception("Not implemented!")
+        # из предыдущего задания
+        self.velocity *= self.momentum # делаем затухание
+        self.velocity -= learning_rate * d_w # уменьшаем скорость в зависимости от качества обучения
+        return w + self.velocity # текущие веса + скорость
